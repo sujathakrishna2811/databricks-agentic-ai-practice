@@ -233,3 +233,16 @@ if len(set(EXPECTED_CATEGORIES)) != len(
         "EXPECTED_CATEGORIES contains "
         "duplicate values."
     )
+
+# ============================================================
+# Modeling Dataset Configuration
+# ============================================================
+
+MODELING_TABLE_NAME = "nlp_modeling_dataset"
+
+MODELING_TABLE = (
+    f"{FULL_SCHEMA}."
+    f"{MODELING_TABLE_NAME}"
+)
+
+SPLIT_COL = "dataset_split"
