@@ -167,3 +167,18 @@ CLASS_NAMES = [
     "Login",
     "Technical",
 ]
+
+# ---------------------------------------------------------
+# MLflow configuration
+# ---------------------------------------------------------
+
+MLFLOW_EXPERIMENT_NAME = (
+    "/Users/sujathakrishna2811@gmail.com/"
+    "support_ticket_nlp_modeling"
+)
+
+MLFLOW_RUN_NAME = (
+    "minilm_full_finetuning"
+)
+
+MLFLOW_MODEL_ARTIFACT_PATH = "model"
