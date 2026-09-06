@@ -1,26 +1,13 @@
 """
-Shared project configuration for the Support Ticket NLP project.
+Central configuration for the Support Ticket NLP project.
 
-This module is the single source of truth for stable project-wide
-configuration such as:
-
-- Unity Catalog objects
-- source and output tables
-- canonical column names
-- expected ticket categories
-- dataset split settings
-- traditional NLP feature settings
-- MLflow resources
-- model registration
-- model serving
-
-Experimental model hyperparameters should remain in their respective
-training notebooks and be logged to MLflow.
+This module contains project-wide constants such as
+Unity Catalog objects, column names, split names,
+feature-engineering settings, and model settings.
 """
 
-
 # ============================================================
-# 1. Project Identification
+# Project
 # ============================================================
 
 PROJECT_NAME = "support_ticket_nlp"
@@ -29,7 +16,7 @@ RANDOM_SEED = 42
 
 
 # ============================================================
-# 2. Unity Catalog Configuration
+# Unity Catalog
 # ============================================================
 
 CATALOG = "dbw_agentic_ai_dev"
@@ -40,37 +27,42 @@ FULL_SCHEMA = f"{CATALOG}.{SCHEMA}"
 
 
 # ============================================================
-# 3. Source Table Configuration
+# Source Tables
 # ============================================================
 
 SOURCE_TABLE_NAME = "bronze_support_tickets"
 
 SOURCE_TABLE = (
-    f"{FULL_SCHEMA}."
-    f"{SOURCE_TABLE_NAME}"
+    f"{FULL_SCHEMA}.{SOURCE_TABLE_NAME}"
 )
 
-# Result:
-# dbw_agentic_ai_dev.support_ticket_ai.bronze_support_tickets
-
 
 # ============================================================
-# 4. NLP Preprocessed Table Configuration
+# NLP Tables
 # ============================================================
 
-NLP_CLEAN_TABLE_NAME = "nlp_preprocessed_tickets"
-
-NLP_CLEAN_TABLE = (
-    f"{FULL_SCHEMA}."
-    f"{NLP_CLEAN_TABLE_NAME}"
+NLP_PREPROCESSED_TABLE_NAME = (
+    "nlp_preprocessed_tickets"
 )
 
-# Result:
-# dbw_agentic_ai_dev.support_ticket_ai.nlp_preprocessed_tickets
+NLP_PREPROCESSED_TABLE = (
+    f"{FULL_SCHEMA}."
+    f"{NLP_PREPROCESSED_TABLE_NAME}"
+)
+
+
+NLP_MODELING_TABLE_NAME = (
+    "nlp_modeling_dataset"
+)
+
+NLP_MODELING_TABLE = (
+    f"{FULL_SCHEMA}."
+    f"{NLP_MODELING_TABLE_NAME}"
+)
 
 
 # ============================================================
-# 5. Canonical NLP Column Names
+# Canonical Columns
 # ============================================================
 
 TICKET_ID_COL = "ticket_id"
@@ -85,51 +77,30 @@ TOKENS_COL = "tokens"
 
 TOKEN_COUNT_COL = "token_count"
 
-
-# ============================================================
-# 6. Expected Ticket Categories
-# ============================================================
-
-EXPECTED_CATEGORIES = (
-    "Billing",
-    "Cancellation",
-    "Login",
-    "Technical",
-)
-
-# ============================================================
-# 7. Train / Validation / Test Configuration
-# ============================================================
-
-TRAIN_SIZE = 0.70
-
-VALIDATION_SIZE = 0.15
-
-TEST_SIZE = 0.15
-
-
-# Validate split configuration.
-
-_SPLIT_TOTAL = (
-    TRAIN_SIZE
-    + VALIDATION_SIZE
-    + TEST_SIZE
-)
-
-if abs(_SPLIT_TOTAL - 1.0) >= 1e-9:
-    raise ValueError(
-        "Train, validation, and test "
-        "fractions must sum to 1.0."
-    )
+SPLIT_COL = "dataset_split"
 
 
 # ============================================================
-# 8. Traditional NLP Feature Configuration
+# Dataset Splits
+# ============================================================
+
+TRAIN_SPLIT = "train"
+
+VALIDATION_SPLIT = "validation"
+
+TEST_SPLIT = "test"
+
+
+# ============================================================
+# Bag of Words
 # ============================================================
 
 BOW_MAX_FEATURES = None
 
-TFIDF_MAX_FEATURES = None
+
+# ============================================================
+# TF-IDF
+# ============================================================
 
 TFIDF_NGRAM_RANGE = (1, 1)
 
@@ -137,112 +108,62 @@ TFIDF_MIN_DF = 1
 
 TFIDF_MAX_DF = 1.0
 
-
-# ============================================================
-# 9. Baseline Model Configuration
-# ============================================================
-
-BASELINE_MODEL_NAME = "logistic_regression_tfidf"
+TFIDF_MAX_FEATURES = None
 
 
 # ============================================================
-# 10. MLflow Configuration
+# Logistic Regression
 # ============================================================
 
-MLFLOW_EXPERIMENT_NAME = (
-    "/Users/sujathakrishna2811@gmail.com/"
-    "support_ticket_nlp_experiment"
+LOGISTIC_REGRESSION_MAX_ITER = 1000
+
+
+# ============================================================
+# Expected Categories
+# ============================================================
+
+EXPECTED_CATEGORIES = [
+    "Billing",
+    "Cancellation",
+    "Login",
+    "Technical",
+]
+
+# ---------------------------------------------------------
+# Embedding Configuration
+# ---------------------------------------------------------
+
+EMBEDDING_MODEL_NAME = (
+    "sentence-transformers/"
+    "all-MiniLM-L6-v2"
 )
 
+EMBEDDING_BATCH_SIZE = 32
 
-# ============================================================
-# 11. Registered Model Configuration
-# ============================================================
+# ---------------------------------------------------------
+# Transformer classifier
+# ---------------------------------------------------------
 
-REGISTERED_MODEL_NAME = (
-    f"{FULL_SCHEMA}."
-    "support_ticket_classifier"
+TRANSFORMER_MODEL_NAME = (
+    "sentence-transformers/"
+    "all-MiniLM-L6-v2"
 )
 
-# Result:
-# dbw_agentic_ai_dev.support_ticket_ai.support_ticket_classifier
+TRANSFORMER_MAX_LENGTH = 128
+TRANSFORMER_BATCH_SIZE = 8
 
+TRANSFORMER_LEARNING_RATE = 2e-5
+TRANSFORMER_WEIGHT_DECAY = 0.01
 
-# ============================================================
-# 12. Serving Endpoint Configuration
-# ============================================================
+TRANSFORMER_MAX_EPOCHS = 8
+TRANSFORMER_EARLY_STOPPING_PATIENCE = 2
 
-SERVING_ENDPOINT_NAME = (
-    "support-ticket-classifier-endpoint"
-)
+TRANSFORMER_DROPOUT = 0.1
+TRANSFORMER_MAX_GRAD_NORM = 1.0
 
-
-# ============================================================
-# 13. Model Input Contract
-# ============================================================
-
-MODEL_INPUT_COL = TEXT_COL
-
-
-# ============================================================
-# 14. Project-Wide Configuration Validation
-# ============================================================
-
-_REQUIRED_STRING_SETTINGS = {
-    "PROJECT_NAME": PROJECT_NAME,
-    "CATALOG": CATALOG,
-    "SCHEMA": SCHEMA,
-    "SOURCE_TABLE": SOURCE_TABLE,
-    "NLP_CLEAN_TABLE": NLP_CLEAN_TABLE,
-    "TICKET_ID_COL": TICKET_ID_COL,
-    "TEXT_COL": TEXT_COL,
-    "TARGET_COL": TARGET_COL,
-    "CLEAN_TEXT_COL": CLEAN_TEXT_COL,
-    "TOKENS_COL": TOKENS_COL,
-    "TOKEN_COUNT_COL": TOKEN_COUNT_COL,
-    "BASELINE_MODEL_NAME": BASELINE_MODEL_NAME,
-    "MLFLOW_EXPERIMENT_NAME": MLFLOW_EXPERIMENT_NAME,
-    "REGISTERED_MODEL_NAME": REGISTERED_MODEL_NAME,
-    "SERVING_ENDPOINT_NAME": SERVING_ENDPOINT_NAME,
-    "MODEL_INPUT_COL": MODEL_INPUT_COL,
-}
-
-
-for _name, _value in _REQUIRED_STRING_SETTINGS.items():
-
-    if (
-        not isinstance(_value, str)
-        or not _value.strip()
-    ):
-        raise ValueError(
-            "Invalid project configuration: "
-            f"{_name}"
-        )
-
-
-if not EXPECTED_CATEGORIES:
-    raise ValueError(
-        "EXPECTED_CATEGORIES cannot be empty."
-    )
-
-
-if len(set(EXPECTED_CATEGORIES)) != len(
-    EXPECTED_CATEGORIES
-):
-    raise ValueError(
-        "EXPECTED_CATEGORIES contains "
-        "duplicate values."
-    )
-
-# ============================================================
-# Modeling Dataset Configuration
-# ============================================================
-
-MODELING_TABLE_NAME = "nlp_modeling_dataset"
-
-MODELING_TABLE = (
-    f"{FULL_SCHEMA}."
-    f"{MODELING_TABLE_NAME}"
-)
-
-SPLIT_COL = "dataset_split"
+CLASS_NAMES = [
+    "Billing",
+    "Cancellation",
+    "Login",
+    "Technical",
+]
