@@ -182,3 +182,32 @@ MLFLOW_RUN_NAME = (
 )
 
 MLFLOW_MODEL_ARTIFACT_PATH = "model"
+
+# ---------------------------------------------------------
+# Unity Catalog model registration
+# ---------------------------------------------------------
+
+REGISTERED_MODEL_NAME = (
+    f"{CATALOG}.{SCHEMA}."
+    "support_ticket_transformer_classifier"
+)
+
+REGISTERED_MODEL_DESCRIPTION = (
+    "Fine-tuned MiniLM Transformer classifier "
+    "for support ticket categorization."
+)
+# ---------------------------------------------------------
+# Model Serving configuration
+# ---------------------------------------------------------
+
+SERVING_ENDPOINT_NAME = (
+    "support-ticket-transformer-endpoint"
+)
+
+SERVING_ENTITY_NAME = (
+    "support-ticket-transformer"
+)
+
+SERVING_WORKLOAD_SIZE = "Small"
+
+SERVING_SCALE_TO_ZERO = True
